@@ -74,29 +74,31 @@ def draw_clothes(image, landmarks):
     hip_right = get_valid_landmark(landmarks[mp_pose.PoseLandmark.RIGHT_HIP], (width * 3) // 4, (height * 2) // 3)
     mid_hip = ((hip_left[0] + hip_right[0]) // 2, (hip_left[1] + hip_right[1]) // 2)
 
-    # Dibujar una camiseta con forma realista (polígono)
+    # Dibujar una camiseta con forma mejorada
     shirt_points = [
         (shoulder_left[0] - 10, shoulder_left[1]),  # Punto superior izquierdo
         (shoulder_right[0] + 10, shoulder_right[1]),  # Punto superior derecho
-        (hip_right[0] + 15, mid_hip[1] - 20),  # Punto inferior derecho
-        (hip_left[0] - 15, mid_hip[1] - 20),  # Punto inferior izquierdo
+        (hip_right[0] + 20, mid_hip[1] - 30),  # Punto inferior derecho
+        (hip_left[0] - 20, mid_hip[1] - 30),  # Punto inferior izquierdo
+        (shoulder_left[0] - 10, shoulder_left[1]),  # Cierre del polígono
     ]
     draw.polygon(shirt_points, fill="pink", outline="black")
 
-    # Dibujar pantalones con forma realista (dos polígonos para las piernas)
+    # Dibujar pantalones más detallados
     pants_left_leg = [
         (hip_left[0] - 10, hip_left[1]),
         (mid_hip[0] - 5, mid_hip[1] + 10),
-        (mid_hip[0] - 20, mid_hip[1] + height // 6),
-        (hip_left[0] - 25, hip_left[1] + height // 6),
+        (mid_hip[0] - 15, mid_hip[1] + height // 5),
+        (hip_left[0] - 20, hip_left[1] + height // 4),
     ]
     pants_right_leg = [
         (hip_right[0] + 10, hip_right[1]),
         (mid_hip[0] + 5, mid_hip[1] + 10),
-        (mid_hip[0] + 20, mid_hip[1] + height // 6),
-        (hip_right[0] + 25, hip_right[1] + height // 6),
+        (mid_hip[0] + 15, mid_hip[1] + height // 5),
+        (hip_right[0] + 20, hip_right[1] + height // 4),
     ]
 
+    # Dibujar el contorno del pantalón
     draw.polygon(pants_left_leg, fill="blue", outline="black")
     draw.polygon(pants_right_leg, fill="blue", outline="black")
 
