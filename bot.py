@@ -49,28 +49,33 @@ def apply_clothes(image, landmarks):
     hip_right = to_pixel(landmarks[mp_pose.PoseLandmark.RIGHT_HIP])
     mid_hip = ((hip_left[0] + hip_right[0]) // 2, (hip_left[1] + hip_right[1]) // 2)
 
-    # Dibujar una camiseta ajustada
+    # Dibujar una camiseta con forma mejorada
     shirt_points = [
-        (shoulder_left[0], shoulder_left[1] - 10),  # Hombro izquierdo
-        (shoulder_right[0], shoulder_right[1] - 10),  # Hombro derecho
-        (hip_right[0] + 10, mid_hip[1] - 30),  # Cadera derecha superior
-        (hip_left[0] - 10, mid_hip[1] - 30),  # Cadera izquierda superior
+        (shoulder_left[0] - 20, shoulder_left[1] - 10),  # Extender hacia afuera del hombro izquierdo
+        (shoulder_right[0] + 20, shoulder_right[1] - 10),  # Extender hacia afuera del hombro derecho
+        (hip_right[0] + 10, mid_hip[1] - 20),  # Cerca de la cadera derecha
+        (hip_left[0] - 10, mid_hip[1] - 20),  # Cerca de la cadera izquierda
     ]
     draw.polygon(shirt_points, fill="pink", outline="black")
 
-    # Dibujar pantalones con separación realista entre las piernas
+    # Dibujar pantalones con forma mejorada
     pants_left_leg = [
         (hip_left[0] - 5, hip_left[1]),  # Cadera izquierda
-        (hip_left[0] - 10, hip_left[1] + height // 4),  # Parte inferior de la pierna izquierda
-        (hip_left[0] + 15, hip_left[1] + height // 4),  # Interior de la pierna izquierda
-        (hip_left[0] + 5, hip_left[1]),  # Cierre
+        (hip_left[0] - 15, hip_left[1] + height // 4),  # Extender hacia abajo y afuera
+        (hip_left[0] + 5, hip_left[1] + height // 4),  # Extender hacia abajo y adentro
+        (hip_left[0] + 5, hip_left[1]),  # Volver al punto inicial
     ]
     pants_right_leg = [
         (hip_right[0] + 5, hip_right[1]),  # Cadera derecha
-        (hip_right[0] + 10, hip_right[1] + height // 4),  # Parte inferior de la pierna derecha
-        (hip_right[0] - 15, hip_right[1] + height // 4),  # Interior de la pierna derecha
-        (hip_right[0] - 5, hip_right[1]),  # Cierre
+        (hip_right[0] + 15, hip_right[1] + height // 4),  # Extender hacia abajo y afuera
+        (hip_right[0] - 5, hip_right[1] + height // 4),  # Extender hacia abajo y adentro
+        (hip_right[0] - 5, hip_right[1]),  # Volver al punto inicial
     ]
+
+    # Separación entre las piernas (opcional, ajustar según proporción)
+    leg_gap = 10
+    pants_left_leg = [(x - leg_gap, y) for x, y in pants_left_leg]
+    pants_right_leg = [(x + leg_gap, y) for x, y in pants_right_leg]
 
     # Dibujar los pantalones
     draw.polygon(pants_left_leg, fill="blue", outline="black")
