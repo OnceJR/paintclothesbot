@@ -3,18 +3,18 @@ import mediapipe as mp
 import numpy as np
 from PIL import Image, ImageDraw
 from telegram import Update
-from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackContext
+from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 import os
 
 # Inicializar MediaPipe Pose
 mp_pose = mp.solutions.pose
 pose = mp_pose.Pose()
 
-def start(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text("¡Hola! Envíame una imagen y agregaré ropa automáticamente.")
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text("¡Hola! Envíame una imagen y agregaré ropa automáticamente.")
 
-def handle_photo(update: Update, context: CallbackContext) -> None:
-    file = update.message.photo[-1].get_file()
+async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    file = await update.message.photo[-1].get_file()
     file_path = file.download("temp_image.jpg")
 
     # Leer imagen con OpenCV
@@ -24,7 +24,7 @@ def handle_photo(update: Update, context: CallbackContext) -> None:
     # Procesar con MediaPipe para detectar pose
     results = pose.process(image_rgb)
     if not results.pose_landmarks:
-        update.message.reply_text("No se detectó ninguna persona en la imagen. Intenta otra.")
+        await update.message.reply_text("No se detectó ninguna persona en la imagen. Intenta otra.")
         os.remove(file_path)
         return
 
@@ -36,7 +36,7 @@ def handle_photo(update: Update, context: CallbackContext) -> None:
     cv2.imwrite(edited_path, annotated_image)
 
     # Enviar la imagen de vuelta al usuario
-    update.message.reply_photo(photo=open(edited_path, 'rb'))
+    await update.message.reply_photo(photo=open(edited_path, 'rb'))
 
     # Eliminar archivos temporales
     os.remove(file_path)
