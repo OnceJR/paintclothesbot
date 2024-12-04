@@ -59,7 +59,7 @@ def draw_clothes(image, landmarks):
     # Obtener dimensiones de la imagen
     width, height = image_pil.size
 
-    # Extraer puntos clave necesarios y asignar valores predeterminados si no son válidos
+    # Función para validar puntos clave y asignar valores predeterminados si no son válidos
     def get_valid_landmark(landmark, default_x, default_y):
         if landmark.visibility < 0.5:  # Umbral de visibilidad
             return default_x, default_y
@@ -67,13 +67,13 @@ def draw_clothes(image, landmarks):
         y = int(landmark.y * height)
         return max(0, min(x, width - 1)), max(0, min(y, height - 1))
 
-    # Obtener puntos clave con valores predeterminados
+    # Obtener puntos clave y asignar valores predeterminados si son inválidos
     shoulder_left = get_valid_landmark(landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER], width // 4, height // 3)
     shoulder_right = get_valid_landmark(landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER], (width * 3) // 4, height // 3)
     hip_left = get_valid_landmark(landmarks[mp_pose.PoseLandmark.LEFT_HIP], width // 4, (height * 2) // 3)
     hip_right = get_valid_landmark(landmarks[mp_pose.PoseLandmark.RIGHT_HIP], (width * 3) // 4, (height * 2) // 3)
 
-    # Asegurar que las coordenadas no estén invertidas
+    # Asegurar que las coordenadas estén correctamente ordenadas
     def sort_coordinates(coord1, coord2):
         x0, y0 = coord1
         x1, y1 = coord2
