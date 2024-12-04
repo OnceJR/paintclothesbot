@@ -3,7 +3,7 @@ import mediapipe as mp
 import numpy as np
 from PIL import Image, ImageDraw
 from telegram import Update
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
+from telegram.ext import Updater, CommandHandler, MessageHandler, filters, CallbackContext
 import os
 
 # Inicializar MediaPipe Pose
@@ -84,7 +84,7 @@ def main() -> None:
     dispatcher = updater.dispatcher
 
     dispatcher.add_handler(CommandHandler("start", start))
-    dispatcher.add_handler(MessageHandler(Filters.photo, handle_photo))
+    dispatcher.add_handler(MessageHandler(filters.PHOTO, handle_photo))
 
     updater.start_polling()
     updater.idle()
