@@ -72,22 +72,33 @@ def draw_clothes(image, landmarks):
     shoulder_right = get_valid_landmark(landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER], (width * 3) // 4, height // 3)
     hip_left = get_valid_landmark(landmarks[mp_pose.PoseLandmark.LEFT_HIP], width // 4, (height * 2) // 3)
     hip_right = get_valid_landmark(landmarks[mp_pose.PoseLandmark.RIGHT_HIP], (width * 3) // 4, (height * 2) // 3)
+    mid_hip = ((hip_left[0] + hip_right[0]) // 2, (hip_left[1] + hip_right[1]) // 2)
 
-    # Asegurar que las coordenadas estén correctamente ordenadas
-    def sort_coordinates(coord1, coord2):
-        x0, y0 = coord1
-        x1, y1 = coord2
-        return (min(x0, x1), min(y0, y1)), (max(x0, x1), max(y0, y1))
+    # Dibujar una camiseta con forma realista (polígono)
+    shirt_points = [
+        (shoulder_left[0] - 10, shoulder_left[1]),  # Punto superior izquierdo
+        (shoulder_right[0] + 10, shoulder_right[1]),  # Punto superior derecho
+        (hip_right[0] + 15, mid_hip[1] - 20),  # Punto inferior derecho
+        (hip_left[0] - 15, mid_hip[1] - 20),  # Punto inferior izquierdo
+    ]
+    draw.polygon(shirt_points, fill="pink", outline="black")
 
-    # Rectángulo de la camiseta
-    shirt_top_left, shirt_bottom_right = sort_coordinates(shoulder_left, hip_right)
-    draw.rectangle([shirt_top_left, shirt_bottom_right], fill="pink", outline="black")
+    # Dibujar pantalones con forma realista (dos polígonos para las piernas)
+    pants_left_leg = [
+        (hip_left[0] - 10, hip_left[1]),
+        (mid_hip[0] - 5, mid_hip[1] + 10),
+        (mid_hip[0] - 20, mid_hip[1] + height // 6),
+        (hip_left[0] - 25, hip_left[1] + height // 6),
+    ]
+    pants_right_leg = [
+        (hip_right[0] + 10, hip_right[1]),
+        (mid_hip[0] + 5, mid_hip[1] + 10),
+        (mid_hip[0] + 20, mid_hip[1] + height // 6),
+        (hip_right[0] + 25, hip_right[1] + height // 6),
+    ]
 
-    # Rectángulo de los pantalones
-    pants_top_left, pants_bottom_right = sort_coordinates(
-        hip_left, (hip_right[0], hip_right[1] + height // 6)
-    )
-    draw.rectangle([pants_top_left, pants_bottom_right], fill="blue", outline="black")
+    draw.polygon(pants_left_leg, fill="blue", outline="black")
+    draw.polygon(pants_right_leg, fill="blue", outline="black")
 
     # Convertir de vuelta a OpenCV
     return cv2.cvtColor(np.array(image_pil), cv2.COLOR_RGB2BGR)
