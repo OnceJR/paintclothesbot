@@ -59,43 +59,27 @@ def draw_clothes(image, landmarks):
     # Obtener dimensiones de la imagen
     width, height = image_pil.size
 
-    # Extraer puntos clave necesarios
-    shoulder_left = landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER]
-    shoulder_right = landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER]
-    hip_left = landmarks[mp_pose.PoseLandmark.LEFT_HIP]
-    hip_right = landmarks[mp_pose.PoseLandmark.RIGHT_HIP]
-
-    # Convertir coordenadas normalizadas a píxeles
-    def to_pixel(landmark):
+    # Extraer puntos clave necesarios y asignar valores predeterminados si no son válidos
+    def get_valid_landmark(landmark, default_x, default_y):
+        if landmark.visibility < 0.5:  # Umbral de visibilidad
+            return default_x, default_y
         x = int(landmark.x * width)
         y = int(landmark.y * height)
-        # Limitar las coordenadas al rango de la imagen
-        x = max(0, min(x, width - 1))
-        y = max(0, min(y, height - 1))
-        return x, y
+        return max(0, min(x, width - 1)), max(0, min(y, height - 1))
 
-    # Convertir puntos clave a píxeles
-    top_left = to_pixel(shoulder_left)
-    top_right = to_pixel(shoulder_right)
-    bottom_left = to_pixel(hip_left)
-    bottom_right = to_pixel(hip_right)
-
-    # Verificar que las coordenadas son válidas para un rectángulo
-    if top_left[0] >= bottom_right[0] or top_left[1] >= bottom_right[1]:
-        raise ValueError("Coordenadas inválidas para dibujar la ropa.")
+    shoulder_left = get_valid_landmark(landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER], width // 4, height // 3)
+    shoulder_right = get_valid_landmark(landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER], (width * 3) // 4, height // 3)
+    hip_left = get_valid_landmark(landmarks[mp_pose.PoseLandmark.LEFT_HIP], width // 4, (height * 2) // 3)
+    hip_right = get_valid_landmark(landmarks[mp_pose.PoseLandmark.RIGHT_HIP], (width * 3) // 4, (height * 2) // 3)
 
     # Dibujar una camiseta
-    draw.rectangle([top_left, bottom_right], fill="pink", outline="black")
+    draw.rectangle([shoulder_left, hip_right], fill="pink", outline="black")
 
     # Dibujar pantalones
-    pants_top_left = bottom_left
-    pants_top_right = bottom_right
-    pants_bottom_left = (pants_top_left[0], pants_top_left[1] + 100)
-    pants_bottom_right = (pants_top_right[0], pants_top_right[1] + 100)
-
-    # Asegurarse de que las coordenadas del pantalón son válidas
-    if pants_bottom_left[1] > height or pants_bottom_right[1] > height:
-        raise ValueError("Coordenadas inválidas para los pantalones.")
+    pants_top_left = hip_left
+    pants_top_right = hip_right
+    pants_bottom_left = (pants_top_left[0], pants_top_left[1] + height // 6)
+    pants_bottom_right = (pants_top_right[0], pants_top_right[1] + height // 6)
 
     draw.rectangle([pants_top_left, pants_bottom_right], fill="blue", outline="black")
 
