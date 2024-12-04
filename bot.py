@@ -59,7 +59,7 @@ def draw_clothes(image, landmarks):
     # Obtener dimensiones de la imagen
     width, height = image_pil.size
 
-    # Extraer puntos clave necesarios
+    # Extraer puntos clave necesarios y asignar valores predeterminados si no son válidos
     def get_valid_landmark(landmark, default_x, default_y):
         if landmark.visibility < 0.5:  # Umbral de visibilidad
             return default_x, default_y
@@ -67,24 +67,26 @@ def draw_clothes(image, landmarks):
         y = int(landmark.y * height)
         return max(0, min(x, width - 1)), max(0, min(y, height - 1))
 
+    # Obtener puntos clave con valores predeterminados
     shoulder_left = get_valid_landmark(landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER], width // 4, height // 3)
     shoulder_right = get_valid_landmark(landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER], (width * 3) // 4, height // 3)
     hip_left = get_valid_landmark(landmarks[mp_pose.PoseLandmark.LEFT_HIP], width // 4, (height * 2) // 3)
     hip_right = get_valid_landmark(landmarks[mp_pose.PoseLandmark.RIGHT_HIP], (width * 3) // 4, (height * 2) // 3)
 
-    # Calcular el ancho y la altura de la ropa
-    shirt_height = int((hip_left[1] - shoulder_left[1]) * 0.6)
-    pants_height = int((hip_left[1] - shoulder_left[1]) * 0.8)
-    shirt_width = int((shoulder_right[0] - shoulder_left[0]) * 1.2)
+    # Asegurar que las coordenadas no estén invertidas
+    def sort_coordinates(coord1, coord2):
+        x0, y0 = coord1
+        x1, y1 = coord2
+        return (min(x0, x1), min(y0, y1)), (max(x0, x1), max(y0, y1))
 
-    # Dibujar una camiseta
-    shirt_top_left = (shoulder_left[0] - shirt_width // 6, shoulder_left[1])
-    shirt_bottom_right = (shoulder_right[0] + shirt_width // 6, shoulder_left[1] + shirt_height)
+    # Rectángulo de la camiseta
+    shirt_top_left, shirt_bottom_right = sort_coordinates(shoulder_left, hip_right)
     draw.rectangle([shirt_top_left, shirt_bottom_right], fill="pink", outline="black")
 
-    # Dibujar pantalones
-    pants_top_left = (hip_left[0] - shirt_width // 6, hip_left[1])
-    pants_bottom_right = (hip_right[0] + shirt_width // 6, hip_left[1] + pants_height)
+    # Rectángulo de los pantalones
+    pants_top_left, pants_bottom_right = sort_coordinates(
+        hip_left, (hip_right[0], hip_right[1] + height // 6)
+    )
     draw.rectangle([pants_top_left, pants_bottom_right], fill="blue", outline="black")
 
     # Convertir de vuelta a OpenCV
