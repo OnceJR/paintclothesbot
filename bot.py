@@ -47,33 +47,36 @@ def apply_clothes(image, landmarks):
     shoulder_right = to_pixel(landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER])
     hip_left = to_pixel(landmarks[mp_pose.PoseLandmark.LEFT_HIP])
     hip_right = to_pixel(landmarks[mp_pose.PoseLandmark.RIGHT_HIP])
+    mid_hip = ((hip_left[0] + hip_right[0]) // 2, (hip_left[1] + hip_right[1]) // 2)
 
-    # Dibujar una camiseta con forma realista
+    # Dibujar una camiseta ajustada
     shirt_points = [
-        (shoulder_left[0] - 10, shoulder_left[1]),
-        (shoulder_right[0] + 10, shoulder_right[1]),
-        (hip_right[0] + 20, hip_right[1] - 30),
-        (hip_left[0] - 20, hip_left[1] - 30),
+        (shoulder_left[0], shoulder_left[1] - 10),  # Hombro izquierdo
+        (shoulder_right[0], shoulder_right[1] - 10),  # Hombro derecho
+        (hip_right[0] + 10, mid_hip[1] - 30),  # Cadera derecha superior
+        (hip_left[0] - 10, mid_hip[1] - 30),  # Cadera izquierda superior
     ]
     draw.polygon(shirt_points, fill="pink", outline="black")
 
-    # Dibujar pantalones con forma realista
+    # Dibujar pantalones con separación realista entre las piernas
     pants_left_leg = [
-        (hip_left[0] - 10, hip_left[1]),
-        (hip_left[0] - 20, hip_left[1] + height // 6),
-        (hip_left[0], hip_left[1] + height // 6),
-        (hip_left[0] + 10, hip_left[1]),
+        (hip_left[0] - 5, hip_left[1]),  # Cadera izquierda
+        (hip_left[0] - 10, hip_left[1] + height // 4),  # Parte inferior de la pierna izquierda
+        (hip_left[0] + 15, hip_left[1] + height // 4),  # Interior de la pierna izquierda
+        (hip_left[0] + 5, hip_left[1]),  # Cierre
     ]
     pants_right_leg = [
-        (hip_right[0] + 10, hip_right[1]),
-        (hip_right[0] + 20, hip_right[1] + height // 6),
-        (hip_right[0], hip_right[1] + height // 6),
-        (hip_right[0] - 10, hip_right[1]),
+        (hip_right[0] + 5, hip_right[1]),  # Cadera derecha
+        (hip_right[0] + 10, hip_right[1] + height // 4),  # Parte inferior de la pierna derecha
+        (hip_right[0] - 15, hip_right[1] + height // 4),  # Interior de la pierna derecha
+        (hip_right[0] - 5, hip_right[1]),  # Cierre
     ]
 
+    # Dibujar los pantalones
     draw.polygon(pants_left_leg, fill="blue", outline="black")
     draw.polygon(pants_right_leg, fill="blue", outline="black")
 
+    # Convertir de vuelta a OpenCV
     return cv2.cvtColor(np.array(image_pil), cv2.COLOR_RGB2BGR)
 
 # Manejador para el comando /start
