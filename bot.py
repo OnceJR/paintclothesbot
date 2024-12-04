@@ -3,7 +3,7 @@ import mediapipe as mp
 import numpy as np
 from PIL import Image, ImageDraw
 from telegram import Update
-from telegram.ext import Updater, CommandHandler, MessageHandler, filters, CallbackContext
+from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackContext
 import os
 
 # Inicializar MediaPipe Pose
@@ -80,14 +80,15 @@ def draw_clothes(image, landmarks):
     return cv2.cvtColor(np.array(image_pil), cv2.COLOR_RGB2BGR)
 
 def main() -> None:
-    updater = Updater("7843171380:AAGVaxSZ4F3KjFefYmT_AKsGKih6H0xno9Y")
-    dispatcher = updater.dispatcher
+    # Crea la aplicación del bot
+    application = Application.builder().token("7843171380:AAGVaxSZ4F3KjFefYmT_AKsGKih6H0xno9Y").build()
 
-    dispatcher.add_handler(CommandHandler("start", start))
-    dispatcher.add_handler(MessageHandler(filters.PHOTO, handle_photo))
+    # Agregar manejadores de comandos y mensajes
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(MessageHandler(filters.PHOTO, handle_photo))
 
-    updater.start_polling()
-    updater.idle()
+    # Iniciar el bot
+    application.run_polling()
 
 if __name__ == "__main__":
     main()
