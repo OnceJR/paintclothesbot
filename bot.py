@@ -72,15 +72,20 @@ def draw_clothes(image, landmarks):
     hip_left = get_valid_landmark(landmarks[mp_pose.PoseLandmark.LEFT_HIP], width // 4, (height * 2) // 3)
     hip_right = get_valid_landmark(landmarks[mp_pose.PoseLandmark.RIGHT_HIP], (width * 3) // 4, (height * 2) // 3)
 
-    # Dibujar una camiseta
-    draw.rectangle([shoulder_left, hip_right], fill="pink", outline="black")
+    # Asegurar que las coordenadas no estén invertidas
+    def sort_coordinates(p1, p2):
+        x0, y0 = p1
+        x1, y1 = p2
+        return (min(x0, x1), min(y0, y1)), (max(x0, x1), max(y0, y1))
 
-    # Dibujar pantalones
-    pants_top_left = hip_left
-    pants_top_right = hip_right
-    pants_bottom_left = (pants_top_left[0], pants_top_left[1] + height // 6)
-    pants_bottom_right = (pants_top_right[0], pants_top_right[1] + height // 6)
+    # Rectángulo de la camiseta
+    top_left, bottom_right = sort_coordinates(shoulder_left, hip_right)
+    draw.rectangle([top_left, bottom_right], fill="pink", outline="black")
 
+    # Rectángulo de los pantalones
+    pants_top_left, pants_bottom_right = sort_coordinates(
+        hip_left, (hip_right[0], hip_right[1] + height // 6)
+    )
     draw.rectangle([pants_top_left, pants_bottom_right], fill="blue", outline="black")
 
     # Convertir de vuelta a OpenCV
