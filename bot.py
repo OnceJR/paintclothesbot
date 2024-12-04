@@ -14,8 +14,12 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text("¡Hola! Envíame una imagen y agregaré ropa automáticamente.")
 
 async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    file = await update.message.photo[-1].get_file()
-    file_path = file.download("temp_image.jpg")
+    # Obtén el archivo
+    file = await context.bot.get_file(update.message.photo[-1].file_id)
+    file_path = "temp_image.jpg"
+    
+    # Descarga el archivo al disco
+    await file.download_to_drive(file_path)
 
     # Leer imagen con OpenCV
     image = cv2.imread(file_path)
@@ -80,7 +84,7 @@ def draw_clothes(image, landmarks):
     return cv2.cvtColor(np.array(image_pil), cv2.COLOR_RGB2BGR)
 
 def main() -> None:
-    # Crea la aplicación del bot
+    # Crea la aplicación del bot con tu token
     application = Application.builder().token("7843171380:AAGVaxSZ4F3KjFefYmT_AKsGKih6H0xno9Y").build()
 
     # Agregar manejadores de comandos y mensajes
